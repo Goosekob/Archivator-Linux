@@ -3,129 +3,102 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <stdlib.h>
-
 
 #define SIZE  512
 
-void printdir(char *dir, int depth, char *afile)
-    {
-      char path[SIZE];
-      char buffer[SIZE];
-      FILE *file, *archive;
-      size_t symbols;
-      DIR *mydir;
-      struct dirent *in;
-      struct stat statbuf;
+void arch(char *dir, char *afile)
+{
+  char path[SIZE];
+  char buffer[SIZE];
+  FILE *file, *archive;
+  size_t symbols;
+  DIR *mydir;
+  struct dirent *in;
+  struct stat statbuf;
 
-      if ((mydir = opendir(dir)) == NULL)
+  if ((mydir = opendir(dir)) == NULL)
+  {
+    printf("Невозможно открыть директорию.\n");
+    return;
+  }
+  chdir(dir);
+
+  while((in = readdir(mydir)) != NULL )
+  {
+    lstat (in->d_name, &statbuf);
+    if (S_ISDIR(statbuf.st_mode))
+    {
+      snprintf(path, sizeof path, "%s/%s", dir, in->d_name);
+      if (strcmp(".", in->d_name) == 0 || strcmp("..", in->d_name) == 0) continue;
+      arch(path, afile);
+    }
+    else 
+    {
+      snprintf(path, sizeof path, "%s/%s", dir, in->d_name);
+
+      if((file = fopen(path, "r")) == NULL)
       {
-        printf("Невозможно открыть директорию.\n");
+        printf("Не удалось открыть файл.\n");
         return;
       }
-      chdir(dir);
-
-      while((in = readdir(mydir)) != NULL )
-      {
-        lstat (in->d_name, &statbuf);
-        if (S_ISDIR(statbuf.st_mode))
-        {
-          snprintf(path, sizeof path, "%s/%s", dir, in->d_name);
-          if (strcmp(".", in->d_name) == 0 || strcmp("..", in->d_name) == 0) continue;
-          printf("%*s%s\n", depth, "", in->d_name);
-          printdir(path, depth+4, afile);
-        }
-        else 
-        {
-          printf("%*s%s\n", depth, " ", in->d_name);
-          snprintf(path, sizeof path, "%s/%s", dir, in->d_name);
-
-          if((file = fopen(path, "r")) == NULL)
-          {
-          printf("Не удалось открыть файл.\n");
-          return;
-          }
  
-          if((archive = fopen(afile, "a+")) == NULL)
-          {
-          printf("Не удалось открыть архив.\n");
-          return;
-          fclose(archive);
-          }
+      if((archive = fopen(afile, "a+")) == NULL)
+      {
+        printf("Не удалось открыть архив.\n");
+        fclose(archive);
+        return;
+      }          
 
-          file = fopen(path, "r");
-          archive = fopen(afile, "a+"); 
+      file = fopen(path, "r");
+      archive = fopen(afile, "a+"); 
 
-          while((symbols = fread(buffer, sizeof(char), SIZE, file)) > 0)
-          {
-            fwrite(buffer, sizeof(char), symbols, archive);
-          }
-          fclose(archive);
-          fclose(file);
-        }
-
+      while((symbols = fread(buffer, sizeof(char), SIZE, file)) > 0)
+      {
+        fwrite(buffer, sizeof(char), symbols, archive);
       }
-      chdir("..");
-      closedir(mydir);
 
+      fclose(archive);
+      fclose(file);
     }
+  }
+  chdir("..");
+  closedir(mydir);
+}
 
 int main() 
 {
-    char afile[50];
-    char directory[50];
-    char path[SIZE];
-    char buffer[SIZE];
-    FILE *file, *archive;
-    size_t symbols;
-    /*DIR *mydir;
-    struct dirent *in;
-    struct statbuf;
-    */
-    printf ("Введите путь к архиву: ");
-    scanf("%s", afile);
+  char afile[50];
+  char directory[50];
+  int number;
 
-    printf ("Введите путь к директории для архивации: \n");
-    scanf("%s", directory);
-
-    printdir(directory, 0, afile);
-
-  /*
-    mydir = opendir(directory);
-      if (!mydir) 
-      {
-        printf("Не удалось открыть директорию.\n");
-        return 3;
-      };
-
-    while ( (in = readdir(mydir)) != NULL)
+  while(1) 
   {
-    snprintf(path, sizeof path, "%s/%s", directory, in->d_name);
+  printf("1 - Архивация\n2 - Разархивация\n3 - Выход\nВведите число: ");
+  scanf("%d", &number);
 
-    if((file = fopen(path, "r")) == NULL)
+    switch(number) 
     {
-        printf("Не удалось открыть файл.\n");
-        return 1;
-    }
- 
-    if((archive = fopen(afile, "a+")) == NULL)
-    {
-        printf("Не удалось открыть архив.\n");
-        return 2;
-        fclose(archive);
-    }
+      case 1: 
+        printf ("Архивация\n");
+        printf ("Введите путь к архиву:\n");
+        scanf("%s", afile);
 
-    file = fopen(path, "r");
-    archive = fopen(afile, "a+"); 
+        printf ("Введите путь к директории для архивации:\n");
+        scanf("%s", directory);
 
-    while((symbols = fread(buffer, sizeof(char), SIZE, file)) > 0)
-    {
-      fwrite(buffer, sizeof(char), symbols, archive);
-    }
+      arch(directory, afile);
+      break;
 
-    fclose(archive);
-    fclose(file);
+    case 2:
+      printf ("Разархивация\n");
+      break;
+
+    case 3:
+      return 0;
+
+    default:
+      printf ("Введено неверное число!\n");
+      continue;
   }
-    closedir(mydir);
-    */
+  }
 }
