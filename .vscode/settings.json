@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "string.h": "c"
+        "string.h": "c",
+        "stdlib.h": "c"
     },
     "makefile.launchConfigurations": [
         {
@@ -11,6 +12,11 @@
         {
             "cwd": "/home/goosek/laba1",
             "binaryPath": "/home/goosek/laba1/arcivator",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/home/goosek/laba1",
+            "binaryPath": "/home/goosek/laba1/a.out",
             "binaryArgs": []
         }
     ]
