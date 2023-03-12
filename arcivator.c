@@ -99,7 +99,7 @@ void arch(char *dir, char *afile)
 void dearch(char *dir, char *afile)
 {
   char path[PATHSIZE], doppath1[PATHSIZE], doppath2[PATHSIZE], doppath3[PATHSIZE];
-  FILE *file, *archive, *dopname, *dopsize, *dopnamesize;
+  FILE *file, *archive, *names, *dopsize, *dopnamesize;
   DIR *mydir;
 
   snprintf(doppath1, sizeof doppath1, "%sdopname", afile);
@@ -112,7 +112,7 @@ void dearch(char *dir, char *afile)
     return;
   }
 
-  if((dopname = fopen(doppath1, "r")) == NULL )
+  if((names = fopen(doppath1, "r")) == NULL )
   {
     printf("Не удалось открыть доп.архив.\n");
     return;
@@ -170,30 +170,19 @@ void dearch(char *dir, char *afile)
     buff[length] = '\0';
     strcpy(data[i], buff);
   }
-  /*
-  for (int i = 0; i < elements; i++)
-    puts(data[i]);
-  fclose(archive);
-  */
 
-  dopname = fopen(doppath1, "r");
+  names = fopen(doppath1, "r");
   for (int i = 0; i < elements; i++)
   {
     name[i] = malloc(namesize[i] + 1);
     for (length = 0; length < namesize[i]; length++)
     {
-      c = fgetc(dopname);
+      c = fgetc(names);
       buff[length] = c;
     }
     buff[length] = '\0';
     strcpy(name[i], buff); 
   }
-
-  /*
-  for (int i = 0; i < elements; i++)
-    puts(name[i]);
-  fclose(dopname);
-  */
 
     for (int i = 0; i < elements; i++)
   {
