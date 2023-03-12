@@ -42,7 +42,7 @@ void arch(char *dir, char *afile)
         return;
       }
  
-      if((archive = fopen(afile, "a+")) == NULL)
+      if((archive = fopen(afile, "a+")) == NULL || afile[0] != '/')
       {
         printf("Не удалось открыть архив.\n");
         fclose(archive);
@@ -67,14 +67,16 @@ void arch(char *dir, char *afile)
 
 int main() 
 {
-  char afile[50];
-  char directory[50];
+  char afile[50] = {'a'};
+  char directory[50] = {'a'};
   int number;
 
   while(1) 
   {
-  printf("1 - Архивация\n2 - Разархивация\n3 - Выход\nВведите число: ");
-  scanf("%d", &number);
+    printf("1 - Архивация\n2 - Разархивация\n3 - Выход\nВведите число: ");
+    scanf("%d", &number);
+    while(getchar()!='\n')
+      continue;
 
     switch(number) 
     {
@@ -87,18 +89,18 @@ int main()
         scanf("%s", directory);
 
       arch(directory, afile);
-      break;
+      return 0;
 
     case 2:
       printf ("Разархивация\n");
-      break;
+      return 0;
 
     case 3:
       return 0;
 
     default:
       printf ("Введено неверное число!\n");
-      continue;
-  }
+      break;
+    }
   }
 }
