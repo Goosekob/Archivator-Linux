@@ -47,39 +47,35 @@ void arch(char *dir, char *afile)
         return;
       }
 
-      if((archive = fopen(afile, "a+")) == NULL || afile[0] != '/')
+      if((archive = fopen(afile, "a")) == NULL || afile[0] != '/')
       {
         printf("Не удалось открыть архив.\n");
-        fclose(archive);
         return;
       }
 
-      if((dopname = fopen(doppath1, "a+")) == NULL )
+      if((dopname = fopen(doppath1, "a")) == NULL )
       {
         printf("Не удалось открыть доп.архив.\n");
-        fclose(dopname);
         return;
       }
 
-      if((dopsize = fopen(doppath2, "a+")) == NULL )
+      if((dopsize = fopen(doppath2, "a")) == NULL )
       {
         printf("Не удалось открыть доп.архив.\n");
-        fclose(dopsize);
         return;
       }
 
-      if((dopnamesize = fopen(doppath3, "a+")) == NULL )
+      if((dopnamesize = fopen(doppath3, "a")) == NULL )
       {
         printf("Не удалось открыть доп.архив.\n");
-        fclose(dopnamesize);
         return;
       }
       
       file = fopen(path, "r");
-      archive = fopen(afile, "a+"); 
-      dopname = fopen(doppath1, "a+");
-      dopsize = fopen(doppath2, "a+");
-      dopnamesize = fopen(doppath3, "a+");
+      archive = fopen(afile, "a"); 
+      dopname = fopen(doppath1, "a");
+      dopsize = fopen(doppath2, "a");
+      dopnamesize = fopen(doppath3, "a");
 
       while((symbols = fread(buffer, sizeof(char), SIZE, file)) > 0)
       {
@@ -102,11 +98,9 @@ void arch(char *dir, char *afile)
 
 void dearch(char *dir, char *afile)
 {
-  char path[PATHSIZE], doppath1[PATHSIZE], doppath2[PATHSIZE], doppath3[PATHSIZE], buffer[SIZE];
+  char path[PATHSIZE], doppath1[PATHSIZE], doppath2[PATHSIZE], doppath3[PATHSIZE];
   FILE *file, *archive, *dopname, *dopsize, *dopnamesize;
-  size_t symbols;
   DIR *mydir;
-  struct dirent *in;
 
   snprintf(doppath1, sizeof doppath1, "%sdopname", afile);
   snprintf(doppath2, sizeof doppath2, "%sdopsize", afile);
@@ -115,28 +109,24 @@ void dearch(char *dir, char *afile)
   if((archive = fopen(afile, "r")) == NULL || afile[0] != '/')
   {
     printf("Не удалось открыть архив.\n");
-    fclose(archive);
     return;
   }
 
   if((dopname = fopen(doppath1, "r")) == NULL )
   {
     printf("Не удалось открыть доп.архив.\n");
-    fclose(dopname);
     return;
   }
 
   if((dopnamesize = fopen(doppath3, "r")) == NULL )
   {
     printf("Не удалось открыть доп.архив.\n");
-    fclose(dopnamesize);
     return;
   }
 
   if((dopsize = fopen(doppath2, "r")) == NULL )
   {
     printf("Не удалось открыть доп.архив.\n");
-    fclose(dopsize);
     return;
   }
 
@@ -169,7 +159,7 @@ void dearch(char *dir, char *afile)
   fclose(dopnamesize);
 
   archive = fopen(afile, "r");
-  for (size_t i = 0; i < elements; i++)
+  for (int i = 0; i < elements; i++)
   {
     data[i] = malloc(size[i] + 1);
     for (length = 0; length < size[i]; length++)
@@ -180,12 +170,14 @@ void dearch(char *dir, char *afile)
     buff[length] = '\0';
     strcpy(data[i], buff);
   }
+  /*
   for (int i = 0; i < elements; i++)
     puts(data[i]);
   fclose(archive);
+  */
 
   dopname = fopen(doppath1, "r");
-  for (size_t i = 0; i < elements; i++)
+  for (int i = 0; i < elements; i++)
   {
     name[i] = malloc(namesize[i] + 1);
     for (length = 0; length < namesize[i]; length++)
@@ -197,13 +189,16 @@ void dearch(char *dir, char *afile)
     strcpy(name[i], buff); 
   }
 
+  /*
   for (int i = 0; i < elements; i++)
     puts(name[i]);
   fclose(dopname);
+  */
 
     for (int i = 0; i < elements; i++)
   {
     snprintf(path, sizeof path, "%s/%s", dir, name[i]);
+    //snprintf(path, sizeof path, "%s/%s.txt", dir, name[i]);
     if((file = fopen(path, "w")) == NULL)
     {
       printf("Не удалось открыть файл.\n");
@@ -215,7 +210,6 @@ void dearch(char *dir, char *afile)
   }
 }
 
-
 int main() 
 {
   char afile[50] = {'0'};
@@ -224,7 +218,7 @@ int main()
 
   while(1) 
   {
-    printf("1 - Архивация\n2 - Разархивация\n3 - Выход\nВведите число: ");
+    printf("\n1 - Архивация\n2 - Разархивация\n3 - Выход\nВведите число: ");
     scanf("%d", &number);
     while(getchar()!='\n')
       continue;
