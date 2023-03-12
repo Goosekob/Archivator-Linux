@@ -208,8 +208,8 @@ void dearch(char *dir, char *afile)
    //snprintf(path, sizeof path, "%s/%s.txt", dir, name[i]);
    if((file = fopen(path, "w")) == NULL)
    {
-     printf("Не удалось открыть файл.\n");
-   exit(1);
+    printf("Не удалось открыть файл.\n");
+    exit(1);
 
    }
    fwrite(data[i], size[i], 1, file);
