@@ -37,7 +37,7 @@ void arch(char *dir, char *afile)
     else 
     {
       snprintf(path, sizeof path, "%s/%s", dir, in->d_name);
-      snprintf(doppath1, sizeof doppath1, "%sdopname", afile);
+      snprintf(doppath1, sizeof doppath1, "%snames", afile);
       snprintf(doppath2, sizeof doppath2, "%sdopsize", afile);
       snprintf(doppath3, sizeof doppath3, "%sdopnamesize", afile);
 
@@ -102,7 +102,7 @@ void dearch(char *dir, char *afile)
   FILE *file, *archive, *names, *dopsize, *dopnamesize;
   DIR *mydir;
 
-  snprintf(doppath1, sizeof doppath1, "%sdopname", afile);
+  snprintf(doppath1, sizeof doppath1, "%snames", afile);
   snprintf(doppath2, sizeof doppath2, "%sdopsize", afile);
   snprintf(doppath3, sizeof doppath3, "%sdopnamesize", afile);
 
@@ -138,7 +138,7 @@ void dearch(char *dir, char *afile)
   chdir(dir);
 
   char *data[SIZE], buff[SIZE], c, *name[SIZE];
-  size_t size[SIZE], namesize[SIZE], length = 0;
+  size_t size[SIZE] = {0}, namesize[SIZE] = {0}, length = 0;
   int elements = 0;
 
   dopsize = fopen(doppath2, "r");
@@ -197,6 +197,13 @@ void dearch(char *dir, char *afile)
     fwrite(data[i], size[i], 1, file);
     fclose(file);
   }
+  for (int i = 0; i < elements; i++)
+  {
+    free(name[i]);
+    free(data[i]);
+  }
+  remove(doppath2);
+  remove(doppath3);
 }
 
 int main() 
